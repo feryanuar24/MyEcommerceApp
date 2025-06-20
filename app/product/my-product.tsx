@@ -1,23 +1,30 @@
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
+import { useAuth } from "@/contexts/AuthContext";
+import { getProductsByUserId } from "@/services/productService";
+import { Redirect, router } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   FlatList,
+  Image,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
 } from "react-native";
-
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { Colors } from "@/constants/Colors";
-import { getProducts } from "@/services/productService";
-import { Image } from "expo-image";
-import { router } from "expo-router";
-import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function TabTwoScreen() {
+export default function MyProductScreen() {
   const [products, setProducts] = useState<any[]>([]);
 
   const scheme = useColorScheme();
+
+  const { user } = useAuth();
+
+  if (!user) {
+    return <Redirect href="/login" />;
+  }
 
   const cardColor =
     scheme === "dark" ? Colors.dark.button : Colors.light.button;
@@ -25,7 +32,7 @@ export default function TabTwoScreen() {
 
   const loadProducts = async () => {
     try {
-      const userProducts = await getProducts();
+      const userProducts = await getProductsByUserId(user?.id || "");
       setProducts(userProducts);
     } catch (e) {
       console.error("Gagal memuat produk:", e);
@@ -64,12 +71,12 @@ export default function TabTwoScreen() {
   return (
     <SafeAreaView>
       <ThemedView style={styles.container}>
-        <ThemedText
-          type="title"
-          style={{ marginHorizontal: 20, marginVertical: 15 }}
-        >
-          Explore
-        </ThemedText>
+        <ThemedView style={[styles.topbar, { backgroundColor: cardColor }]}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <IconSymbol name="arrow.backward" color={iconColor} />
+          </TouchableOpacity>
+          <ThemedText type="subtitle">My Product</ThemedText>
+        </ThemedView>
         {products.length === 0 ? (
           <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
             Belum ada produk
@@ -98,6 +105,13 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+  },
+  topbar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 20,
+    marginBottom: 20,
   },
   card: {
     width: 150,

@@ -1,75 +1,224 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, useColorScheme } from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
+import { useAuth } from "@/contexts/AuthContext";
+import { getProductsByCategory } from "@/services/productService";
+import { Image } from "expo-image";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
+  const scheme = useColorScheme();
+  const { user } = useAuth();
+
+  const [electronic, setElectronic] = useState<any[]>([]);
+  const [fashion, setFashion] = useState<any[]>([]);
+
+  const iconColor = scheme == "dark" ? Colors.dark.icon : Colors.light.icon;
+  const buttonColor =
+    scheme == "dark" ? Colors.dark.button : Colors.light.button;
+
+  const loadElectronic = async () => {
+    try {
+      const product = await getProductsByCategory("Elektronik");
+      if (product && product.length > 0) {
+        setElectronic(product);
+      } else {
+        console.warn("No electronic products found.");
+      }
+    } catch (e) {
+      console.error("Failed to load electronic data:", e);
+    }
+  };
+
+  const loadFashion = async () => {
+    try {
+      const product = await getProductsByCategory("Fashion");
+      if (product && product.length > 0) {
+        setFashion(product);
+      } else {
+        console.warn("No fashion products found.");
+      }
+    } catch (e) {
+      console.error("Failed to load fashion data:", e);
+    }
+  };
+
+  useEffect(() => {
+    loadElectronic();
+    loadFashion();
+  }, []);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView>
+      <ScrollView>
+        <ThemedView style={styles.container}>
+          <ThemedView style={styles.iconNameContainer}>
+            <ThemedView
+              style={[
+                styles.iconContainer,
+                { backgroundColor: buttonColor, borderRadius: 25 },
+              ]}
+            >
+              <IconSymbol name="person.fill" color={iconColor} />
+            </ThemedView>
+            <ThemedText>
+              Welcome,{" "}
+              <ThemedText type="defaultSemiBold">{user?.name}</ThemedText>
+            </ThemedText>
+          </ThemedView>
+          <ThemedView style={styles.bannerContainer}>
+            <Image
+              source={{
+                uri: "https://placehold.co/600x200?text=Special+Promo+Banner",
+              }}
+              style={styles.bannerImage}
+              contentFit="cover"
+            />
+          </ThemedView>
+          <ThemedView>
+            <ThemedView style={styles.subtitleContainer}>
+              <ThemedText type="subtitle">Electronic</ThemedText>
+              <IconSymbol name="arrow.forward" color={iconColor} />
+            </ThemedView>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ paddingVertical: 16 }}
+            >
+              {electronic.map((item) => (
+                <ThemedView key={item.id} style={styles.card}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/product/show/[id]",
+                        params: { id: item.id },
+                      })
+                    }
+                  >
+                    <Image
+                      source={{ uri: item.image }}
+                      style={styles.cardImage}
+                      contentFit="cover"
+                    />
+                    <ThemedText style={styles.cardTitle}>
+                      {item.title}
+                    </ThemedText>
+                    <ThemedText style={styles.cardPrice}>
+                      Rp {item.price}
+                    </ThemedText>
+                  </TouchableOpacity>
+                </ThemedView>
+              ))}
+            </ScrollView>
+          </ThemedView>
+          <ThemedView>
+            <ThemedView style={styles.subtitleContainer}>
+              <ThemedText type="subtitle">Fashion</ThemedText>
+              <IconSymbol name="arrow.forward" color={iconColor} />
+            </ThemedView>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ paddingVertical: 16 }}
+            >
+              {fashion.map((item) => (
+                <ThemedView key={item.id} style={styles.card}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      router.push({
+                        pathname: "/product/show/[id]",
+                        params: { id: item.id },
+                      })
+                    }
+                  >
+                    <Image
+                      source={{ uri: item.image }}
+                      style={styles.cardImage}
+                      contentFit="cover"
+                    />
+                    <ThemedText style={styles.cardTitle}>
+                      {item.title}
+                    </ThemedText>
+                    <ThemedText style={styles.cardPrice}>
+                      Rp {item.price}
+                    </ThemedText>
+                  </TouchableOpacity>
+                </ThemedView>
+              ))}
+            </ScrollView>
+          </ThemedView>
+        </ThemedView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  container: {
+    height: "100%",
+    padding: 16,
+    paddingBottom: 100,
+  },
+  iconNameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  iconContainer: {
+    width: 30,
+    height: 30,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  bannerContainer: {
+    marginTop: 16,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  bannerImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 12,
+  },
+  subtitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  card: {
+    width: 150,
+    marginRight: 12,
+    borderRadius: 10,
+    overflow: "hidden",
+    padding: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  cardImage: {
+    width: "100%",
+    height: 100,
+    borderRadius: 8,
+  },
+  cardTitle: {
+    fontWeight: "bold",
+    marginTop: 8,
+  },
+  cardPrice: {
+    marginTop: 4,
   },
 });
