@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "MyEcommerceApp",
-    "slug": "MyEcommerceApp",
+    "name": "My E-Commerce App",
+    "slug": "my-ecommerce-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.feryanuar24.myecommerceapp"
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +40,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5a3672c8-c8e2-42b7-9ebf-023a71766b75"
+      }
     }
   }
 }

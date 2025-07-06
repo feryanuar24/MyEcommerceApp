@@ -79,7 +79,7 @@ export default function MyProductScreen() {
         </ThemedView>
         {products.length === 0 ? (
           <ThemedText style={{ textAlign: "center", marginTop: 20 }}>
-            Belum ada produk
+            Product Unavailable
           </ThemedText>
         ) : (
           <ThemedView style={styles.subcontainer}>

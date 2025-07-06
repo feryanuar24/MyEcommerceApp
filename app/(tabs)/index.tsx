@@ -55,8 +55,8 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <SafeAreaView>
-      <ScrollView>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <ThemedView style={styles.container}>
           <ThemedView style={styles.iconNameContainer}>
             <ThemedView
@@ -86,72 +86,88 @@ export default function HomeScreen() {
               <ThemedText type="subtitle">Electronic</ThemedText>
               <IconSymbol name="arrow.forward" color={iconColor} />
             </ThemedView>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ paddingVertical: 16 }}
-            >
-              {electronic.map((item) => (
-                <ThemedView key={item.id} style={styles.card}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      router.push({
-                        pathname: "/product/show/[id]",
-                        params: { id: item.id },
-                      })
-                    }
-                  >
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.cardImage}
-                      contentFit="cover"
-                    />
-                    <ThemedText style={styles.cardTitle}>
-                      {item.title}
-                    </ThemedText>
-                    <ThemedText style={styles.cardPrice}>
-                      Rp {item.price}
-                    </ThemedText>
-                  </TouchableOpacity>
-                </ThemedView>
-              ))}
-            </ScrollView>
+            {electronic.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ paddingVertical: 16 }}
+              >
+                {electronic.map((item) => (
+                  <ThemedView key={item.id} style={styles.card}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push({
+                          pathname: "/product/show/[id]",
+                          params: { id: item.id },
+                        })
+                      }
+                    >
+                      <Image
+                        source={{ uri: item.image }}
+                        style={styles.cardImage}
+                        contentFit="cover"
+                      />
+                      <ThemedText style={styles.cardTitle}>
+                        {item.title}
+                      </ThemedText>
+                      <ThemedText style={styles.cardPrice}>
+                        Rp {item.price}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  </ThemedView>
+                ))}
+              </ScrollView>
+            ) : (
+              <ThemedView style={styles.unavailableContainer}>
+                <ThemedText style={styles.unavailableText}>
+                  Product Unavailable
+                </ThemedText>
+              </ThemedView>
+            )}
           </ThemedView>
           <ThemedView>
             <ThemedView style={styles.subtitleContainer}>
               <ThemedText type="subtitle">Fashion</ThemedText>
               <IconSymbol name="arrow.forward" color={iconColor} />
             </ThemedView>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ paddingVertical: 16 }}
-            >
-              {fashion.map((item) => (
-                <ThemedView key={item.id} style={styles.card}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      router.push({
-                        pathname: "/product/show/[id]",
-                        params: { id: item.id },
-                      })
-                    }
-                  >
-                    <Image
-                      source={{ uri: item.image }}
-                      style={styles.cardImage}
-                      contentFit="cover"
-                    />
-                    <ThemedText style={styles.cardTitle}>
-                      {item.title}
-                    </ThemedText>
-                    <ThemedText style={styles.cardPrice}>
-                      Rp {item.price}
-                    </ThemedText>
-                  </TouchableOpacity>
-                </ThemedView>
-              ))}
-            </ScrollView>
+            {fashion.length > 0 ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ paddingVertical: 16 }}
+              >
+                {fashion.map((item) => (
+                  <ThemedView key={item.id} style={styles.card}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push({
+                          pathname: "/product/show/[id]",
+                          params: { id: item.id },
+                        })
+                      }
+                    >
+                      <Image
+                        source={{ uri: item.image }}
+                        style={styles.cardImage}
+                        contentFit="cover"
+                      />
+                      <ThemedText style={styles.cardTitle}>
+                        {item.title}
+                      </ThemedText>
+                      <ThemedText style={styles.cardPrice}>
+                        Rp {item.price}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  </ThemedView>
+                ))}
+              </ScrollView>
+            ) : (
+              <ThemedView style={styles.unavailableContainer}>
+                <ThemedText style={styles.unavailableText}>
+                  Product Unavailable
+                </ThemedText>
+              </ThemedView>
+            )}
           </ThemedView>
         </ThemedView>
       </ScrollView>
@@ -160,8 +176,14 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
-    height: "100%",
+    flex: 1,
     padding: 16,
     paddingBottom: 100,
   },
@@ -220,5 +242,15 @@ const styles = StyleSheet.create({
   },
   cardPrice: {
     marginTop: 4,
+  },
+  unavailableContainer: {
+    paddingVertical: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  unavailableText: {
+    fontSize: 16,
+    fontStyle: "italic",
+    opacity: 0.6,
   },
 });
